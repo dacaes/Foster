@@ -1715,7 +1715,7 @@ public class Batcher : IDisposable
         at.X = Calc.Round(at.X);
         at.Y = Calc.Round(at.Y);
 
-		int lineStartCh = 0;	//currentLineInitialCharIndex
+        float previousLinesWidth = 0;
 
         for (int i = 0; i < text.Length; i++)
         {
@@ -1727,16 +1727,16 @@ public class Batcher : IDisposable
                 {
                     if(text[j] == ' ')
                     {
-                        maxLineWidthReached = font.WidthOfLine(text[lineStartCh..(j)]) >= maxLineWidth ? true : false;
-						break;
+                        maxLineWidthReached = font.WidthOfLine(text[0..(j)]) - previousLinesWidth >= maxLineWidth ? true : false;
+
+                        if(maxLineWidthReached) previousLinesWidth = font.WidthOfLine(text[0..(j)]);
+                        	break;
                     }
                 }
             }
 
             if (text[i] == '\n' || maxLineWidthReached)
             {
-				lineStartCh = i+1;
-
                 at.X = position.X;
                 if (justify.X != 0 && i < text.Length - 1)
                     at.X -= justify.X * font.WidthOfLine(text[(i + 1)..]);
